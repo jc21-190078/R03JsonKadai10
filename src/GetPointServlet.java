@@ -1,16 +1,22 @@
 
+import java.beans.Statement;
 import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.sql.PreparedStatement;
+import java.sql.Connection;
 
+import javax.naming.InitialContext;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
+
 
 /**
  * Servlet implementation class GetPointServlet
@@ -33,42 +39,22 @@ public class GetPointServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		Conection conn = null;
-		String url = "jdbc:mysql://localhost/jdbctestdb";
-		String user = "root";
-		String password = "";
-
 		try {
-					.prepareStatement("select id,name,point from point p ,ticket t");
-			ResultSet result = st.executeQuery();
+			InitialContext ic = new InitialContext();
+			DataSource ds = (DataSource) ic.lookup("java:/");
+			Connection con = ds.getConnection();
+			con.setAutoCommit(false);
+			PreparedStatement st = con.prepareStatement("select * from aaa");
+			con.setAutoCommit(true);
+			
+			//処理
 
-			java.util.List<String[]> list = new ArrayList<>();
-			while (result.next() == true) {
-				String[] s = new String[3];
-				// System.out.println(result.getString("X"));
-
-				s[0] = result.getString("id");
-				s[1] = result.getString("name");
-				s[2] = result.getString("point");
-				list.add(s);
-
-			}
-			for (String[] s : list) {
-				System.out.println(s[0]);
-			}
-			request.setAttribute("list", list);
-		} catch (ClassNotFoundException e) {
+			
+			st.close();
+			con.close();
+		} catch (Exception e) {
+			System.out.println("<pre>");
 			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}finally {
-			try{
-				 if (conn != null){
-				      conn.close();
-				    }
-				  }catch (SQLException e){	
-					  e.printStackTrace();
-			}
 		}
 
 		RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/jsp/getPoint.jsp");
