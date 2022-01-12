@@ -32,4 +32,4 @@ public class GetPointServlet extends HttpServlet {
 		rd.forward(request, response);
 	}
 
-}
+} 
