@@ -32,4 +32,4 @@ public class GetTicketListServlet extends HttpServlet {
 		rd.forward(request, response);
 	}
 
-} 
+}
