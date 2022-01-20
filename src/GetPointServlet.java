@@ -61,7 +61,7 @@ public class GetPointServlet extends HttpServlet {
 				s[1]=result.getString("user_id");
 				s[2]=result.getString("point");
 				
-				System.out.println(s[1]);
+				
 				
 
 				list.add(s);
