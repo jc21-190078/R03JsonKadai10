@@ -20,6 +20,7 @@ import javax.sql.DataSource;
 
 import java.util.ArrayList;
 import com.google.gson.Gson;
+
 /**
  * Servlet implementation class GetPointServlet
  */
@@ -50,35 +51,56 @@ public class GetPointServlet extends HttpServlet {
 		try {
 			Class.forName(driverName);
 			Connection connection = DriverManager.getConnection(url, id, pass);
-			PreparedStatement st = connection.prepareStatement("select * from point ");
-			ResultSet result = st.executeQuery();
+
+			PreparedStatement st1 = connection.prepareStatement("select * from point where user_id = ?");
+			PreparedStatement st2 = connection
+					.prepareStatement("insert into point (dept_id,user_id,point) values (?,?,500)");
+			ResultSet result1 = st1.executeQuery();
+			ResultSet result2 = st2.executeQuery();
+
+			String user = request.getParameter("USER_ID");
+			String tenpo = request.getParameter("TENPO_ID");
+
 			List<String[]> list = new ArrayList<>();
-			
-			while( result.next() == true) {
-				String[] s = new String[4];
+			while (result1.next() == true) {
 
-				s[0]=result.getString("dept_id");
-				s[1]=result.getString("user_id");
-				s[2]=result.getString("point");
-				
-				
-				
-
-				list.add(s);
 			}
+			while (result1.next() == true) {
+				String[] s = new String[3];
+
+				s[0] = result1.getString("dept_id");
+				s[1] = result1.getString("user_id");
+				s[2] = result1.getString("point");
+
+				String dept = s[0];
+				String use = s[1];
+
+				if (dept == tenpo && use == user) {
+					list.add(s);
+				} else {
+
+					s[0] = result2.getString("dept_id");
+					s[1] = result2.getString("user_id");
+					s[2] = result2.getString("point");
+
+					list.add(s);
+				}
+
+			}
+
 			Gson gson = new Gson();
 			String json = gson.toJson(list);
-			
-			request.setAttribute("json",list);
-			request.getRequestDispatcher("/WEB-INF/jsp/getPoint.jsp").forward(request,response);
-			
-		} catch (ClassNotFoundException e ) {
+
+			request.setAttribute("json", list);
+			request.getRequestDispatcher("/WEB-INF/jsp/getPoint.jsp").forward(request, response);
+
+		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
-		} catch (SQLException e ) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 }
-	// RequestDispatcher rd =
-	// request.getRequestDispatcher("/WEB-INF/jsp/getPoint.jsp");
-	// rd.forward(request, response);
+// RequestDispatcher rd =
+// request.getRequestDispatcher("/WEB-INF/jsp/getPoint.jsp");
+// rd.forward(request, response);
