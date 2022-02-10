@@ -20,6 +20,7 @@ import javax.sql.DataSource;
 
 import java.util.ArrayList;
 import com.google.gson.Gson;
+import com.mysql.cj.protocol.Resultset;
 
 /**
  * Servlet implementation class GetPointServlet
@@ -52,48 +53,36 @@ public class GetPointServlet extends HttpServlet {
 			Class.forName(driverName);
 			Connection connection = DriverManager.getConnection(url, id, pass);
 
-			PreparedStatement st1 = connection.prepareStatement("select * from point where user_id = ?");
+			PreparedStatement st1 = connection.prepareStatement("select * from point where user_id = ? and dept_id = ?");
 			PreparedStatement st2 = connection
-					.prepareStatement("insert into point (dept_id,user_id,point) values (?,?,500)");
-			ResultSet result1 = st1.executeQuery();
-			ResultSet result2 = st2.executeQuery();
+					.prepareStatement("insert into point (user_id,dept_id,point) values (?,?,500)");
+			
 
 			String user = request.getParameter("USER_ID");
 			String tenpo = request.getParameter("TENPO_ID");
-
-			List<String[]> list = new ArrayList<>();
-			while (result1.next() == true) {
-
+			String point = null;
+			
+			
+			st1.setString(1, user);
+			st1.setString(2, tenpo);
+			ResultSet rs1 = st1.executeQuery();
+			
+			if(rs1.next() == true) {
+				point = rs1.getString("point");
+				
 			}
-			while (result1.next() == true) {
-				String[] s = new String[3];
-
-				s[0] = result1.getString("dept_id");
-				s[1] = result1.getString("user_id");
-				s[2] = result1.getString("point");
-
-				String dept = s[0];
-				String use = s[1];
-
-				if (dept == tenpo && use == user) {
-					list.add(s);
-				} else {
-
-					s[0] = result2.getString("dept_id");
-					s[1] = result2.getString("user_id");
-					s[2] = result2.getString("point");
-
-					list.add(s);
-				}
-
+			else {
+				st2.setString(1, user);
+				st2.setString(2, tenpo);
+				st2.executeUpdate();
+				 point = "500";
 			}
 
-			Gson gson = new Gson();
-			String json = gson.toJson(list);
 
-			request.setAttribute("json", list);
+			request.setAttribute("point", point);
 			request.getRequestDispatcher("/WEB-INF/jsp/getPoint.jsp").forward(request, response);
-
+			//request.getRequestDispatcher("https://192.168.54.190:8080/R03JsonKadai10/getPoint?userId=548269&shopId=909938").forward(request, response);
+				
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -101,6 +90,3 @@ public class GetPointServlet extends HttpServlet {
 		}
 	}
 }
-// RequestDispatcher rd =
-// request.getRequestDispatcher("/WEB-INF/jsp/getPoint.jsp");
-// rd.forward(request, response);
