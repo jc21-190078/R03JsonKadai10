@@ -14,11 +14,8 @@ if (optList.isPresent()) {
 
 <%
 for (String[] s : list) {
-	String ticket_id = (String) request.getAttribute("ticket_id");
-	String ticket_name = (String) request.getAttribute("ticket_name");
-	String point = (String) request.getAttribute("point");
 %>
-{"ID":<%= ticket_id %>,"OptName":<%=ticket_name %>","POINT":<%=point %>},
+{"ID":<%= s[0] %>,"OptName":<%=s[1]%>","POINT":<%=s[2]%>},
 <%
 }
 %>
