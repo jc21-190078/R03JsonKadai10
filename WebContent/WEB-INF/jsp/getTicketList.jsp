@@ -15,7 +15,7 @@ if (optList.isPresent()) {
 <%
 for (String[] s : list) {
 %>
-{"ID":<%= s[0] %>,"Ticket名":"<%=s[1]%>","POINT":<%=s[2]%>}<br>
+{"ID":<%= s[0] %>,"Ticket名":"<%=s[1]%>","POINT":<%=s[2]%>}
 <%
 }
 %>
